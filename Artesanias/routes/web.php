@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('index');
 });
+Route::get('/', function () {
+    return view('practica');
+});
+
 Route::get('/producto/{id}', function ($id) {
     return view('verproducto')->with('id',$id);
 });
