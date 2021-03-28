@@ -1,0 +1,23 @@
+
+.container{
+ border-color: black;   
+}
+
+.heigth_a{
+height:500px
+}
+.heigth_b{
+    height:200px
+    }
+    .heigth_c{
+        height: 300px;
+    }
+    .heigth_d{
+        height: 90px;
+    }
+    .heigth_e{
+        height: 150px;
+    }
+    .ml-1 {
+        margin-left: ($spacer * 5) !important;
+      }
