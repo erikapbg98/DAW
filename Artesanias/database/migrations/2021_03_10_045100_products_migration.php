@@ -16,12 +16,12 @@ class ProductsMigration extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->increments('id');
             $table->string('description');
-            $table->string('stock');
+            $table->double('stock');
             $table->decimal('price');
             $table->string('image');
-             
-            
- $table->timestamps();
+            $table->string('tags');
+            $table->string('slug');
+            $table->timestamps();
                     
 
         });  //  //
