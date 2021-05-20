@@ -9,11 +9,16 @@ use App\Models\Product;
 use File;
 class ProductosController extends Controller
 {
+    
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct(){
+        $this->middleware('auth');
+    }
+
     public function index()
     {
        
@@ -49,7 +54,7 @@ class ProductosController extends Controller
             'stock'=>'required|max:255|min:1|numeric',
             'precio'=>'required|max:255|min:1|numeric',
             'tags'=>'required|max:255|min:1',
-            'imagen'=>'required|image|mimes:jpg,jpeg,png,gif,svg|max:2048'
+            'image'=>'required|image|mimes:jpg,jpeg,png,gif,svg|max:2048'
         ]);
 
         if($validator->fails()){
@@ -58,11 +63,11 @@ class ProductosController extends Controller
             ->with('errorInsert', 'Favor de llenar todos los campos')
             ->withErrors('Favor de llenar los campos');
         }else{
-            $imagen=$request->file('imagen');
-            $nombre=time().'.'.$imagen->getClientOriginalExtension();
+            $image=$request->file('image');
+            $nombre=time().'.'.$image->getClientOriginalExtension();
             $destino=public_path('images/productos');
           
-            $request->imagen->move($destino,$nombre);
+            $request->image->move($destino,$nombre);
             $producto = Product::create([
                 'name'=>request()->nombre,
                 'description'=>request()->descripcion,
@@ -95,11 +100,46 @@ class ProductosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-        //
-    }
+        $validator = Validator::make($request->all(),[
+            'nombre'=>'required|max:255|min:1',
+            'descripcion'=>'required|max:255|min:1',
+            'stock'=>'required|min:1|numeric',
+            'precio'=>'required|min:1|numeric',
+            'tags'=>'required|max:255|min:1'
+        ]);
+        if($validator->fails()){
+            return back()
+            ->withInput()
+            ->with('errorEdit', 'Favor de llenar todos los campos')
+            ->withErrors($validator);
+        }else{
+            $producto=Product::find($request->id);
+            $producto->name=$request->nombre;
+            $producto->description=$request->descripcion;
+            $producto->stock=$request->stock;
+            $producto->price=$request->precio;
+            $producto->tags=$request->tags;
+            $validator2 = Validator::make($request->all(),[
+                'image'=>'required|image|mimes:jpg,jpeg,png,gif,svg|max:2048'
+            ]);
 
+            if(!$validator2->fails()){
+                $image=$request->file('image');
+                $nombre=time().'.'.$image->getClientOriginalExtension();
+                $destino = public_path('image/productos');
+                $request->image->move($destino, $nombre);
+                if(File::exists(public_path('image/productos/'.$producto->image))){
+                    unlink(public_path('image/productos/'.$producto->image));
+                }
+                $producto->image=$nombre;
+            }
+            $producto->save();
+            return back()->with('Listo', 'Se ha actualizado correctamente');
+        }
+
+    }
     /**
      * Update the specified resource in storage.
      *
@@ -121,8 +161,8 @@ class ProductosController extends Controller
     public function destroy($id)
     {
          $producto =Product::find($id);
-        if(File::exists(public_path('img/productos'.$producto->imagen))){
-            unlink( public_path('img/productos'.$producto->imagen) );
+        if(File::exists(public_path('image/productos'.$producto->image))){
+            unlink( public_path('image/productos'.$producto->image) );
         }
         $producto->delete();
         return back() ->with('Listo', 'se ha borrado correctamente'); //

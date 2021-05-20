@@ -28,10 +28,16 @@ Route::get('/contacto', function(){
 });
 
 
-Route::group(['prefix'=>'admin','as'=>'admin.'], function(){
+Route::get('/practica', function () {return view('practica');});
+
+Route::group(['prefix'=>'admin','as'=>'admin.'],function(){
     Route::get('/', function () {return view('admin.index');});
     Route::get('/usuarios', [App\Http\Controllers\Admin\UsuariosController::class,'index']);
-    Route::get('/productos',[App\Http\Controllers\Admin\ProductosController::class,'index']);
-    Route:: resource('productos',App\Http\Controllers\Admin\ProductosController::class);
-    Route:: resource('usuarios',App\Http\Controllers\Admin\UsuariosController::class);
+    Route::get('/productos', [App\Http\Controllers\Admin\ProductosController::class,'index']);
+    Route::post('/productos/edit', [App\Http\Controllers\Admin\ProductosController::class,'edit']);
+    Route::resource('productos', App\Http\Controllers\Admin\ProductosController::class);
+    Route::resource('usuarios', App\Http\Controllers\Admin\UsuariosController::class);;
 });
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
